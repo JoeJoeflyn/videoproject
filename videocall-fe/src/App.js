@@ -9,7 +9,7 @@ import Peer from "simple-peer";
 import io from "socket.io-client";
 import "./App.css";
 
-const socket = io.connect("http://localhost:8080");
+const socket = io.connect("http://localhost:6000");
 
 function App() {
   const [userId, setUserId] = useState("");
@@ -29,9 +29,14 @@ function App() {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
+        if (!stream) return;
+        console.log("stream", stream);
         setStream(stream);
-        myVideo.current.srcObject = stream;
-      });
+        if (myVideo?.current) {
+          myVideo.current.srcObject = stream;
+        }
+      })
+      .catch((e) => console.log("??????, ", e));
 
     socket.on("id", (id) => {
       setUserId(id);
@@ -43,7 +48,7 @@ function App() {
       setName(data.name);
       setCallerSignal(data.signal);
     });
-  }, []);
+  }, [myVideo.current]);
 
   const callUser = (id) => {
     const peer = new Peer({
@@ -93,6 +98,7 @@ function App() {
     connectionRef.current.destroy();
   };
 
+  console.log("stream", stream);
   return (
     <>
       <h1 style={{ textAlign: "center", color: "#fff" }}>Zoomish</h1>
