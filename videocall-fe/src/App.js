@@ -30,13 +30,12 @@ function App() {
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         if (!stream) return;
-        console.log("stream", stream);
-        setStream(stream);
         if (myVideo?.current) {
+          setStream(stream);
           myVideo.current.srcObject = stream;
         }
       })
-      .catch((e) => console.log("??????, ", e));
+      .catch((e) => console.error("Error", e));
 
     socket.on("id", (id) => {
       setUserId(id);
@@ -48,7 +47,7 @@ function App() {
       setName(data.name);
       setCallerSignal(data.signal);
     });
-  }, [myVideo.current]);
+  }, []);
 
   const callUser = (id) => {
     const peer = new Peer({
@@ -105,15 +104,13 @@ function App() {
       <div className="container">
         <div className="video-container">
           <div className="video">
-            {stream && (
-              <video
-                playsInline
-                muted
-                ref={myVideo}
-                autoPlay
-                style={{ width: "300px" }}
-              />
-            )}
+            <video
+              playsInline
+              muted
+              ref={myVideo}
+              autoPlay
+              style={{ width: "300px" }}
+            />
           </div>
           <div className="video">
             {callAccepted && !callEnded ? (
